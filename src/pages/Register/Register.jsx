@@ -1,5 +1,6 @@
 import { Grid, TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
-import React, { useRef } from 'react';
+import axios from 'axios';
+import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
@@ -8,40 +9,36 @@ const Register = () => {
     defaultValues: {}
   });
 
+  const [errorMessage, setErrorMessage] = useState(''); // State to store error message
+
   const nameRef = useRef();
   const emailRef = useRef();
   const phoneRef = useRef();
   const pinRef = useRef();
   const roleRef = useRef();
 
-  const handleRegister = (data) => {
+  const handleRegister = async (data) => {
+    const registrationDate = new Date().toISOString();
+    const save = { ...data, status: "pending", registrationDate };
 
-
-
-
-
-    const RegistrationDate = new Date().toISOString() ;
-const save = {...data,status:"pending",RegistrationDate} ;
-
-if(data.role ==="agent"){
-
-axios.post('http://localhost:3000/')
-
-
-
-  console.log("connected",save, );
-    // reset();
-  console.log("its agent")
-
-}else{
-  console.log("connected",save, );
-    // reset();
-  console.log("its user")
-}
-
-
-
-    
+    try {
+      if (data.role === "agent") {
+        const res = await axios.post(`${import.meta.env.VITE_SITE_URL}/agent`, save);
+        console.log(res.data);
+        setErrorMessage(''); 
+      } else {
+        const res = await axios.post(`${import.meta.env.VITE_SITE_URL}/user`, save);
+        console.log(res.data);
+        setErrorMessage(''); 
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        setErrorMessage('coordinates already exist'); // Set the error message from the response
+      } else {
+        setErrorMessage('An unexpected error occurred'); // Set a generic error message for other errors
+      }
+      console.log(error);
+    }
   };
 
   const handleKeyDown = (e, ref) => {
@@ -52,10 +49,9 @@ axios.post('http://localhost:3000/')
   };
 
   return (
-    <div className='bg-zinc-100 min-h-screen flex flex-col  items-center w-full'>
+    <div className='bg-zinc-100 min-h-screen flex flex-col items-center w-full'>
       <br />
       <div className='border mt-[10vh] border-zinc-500 backdrop-blur-md p-3 rounded-md min-w-96'>
-        
         <form onSubmit={handleSubmit(handleRegister)} className='flex flex-col gap-3'>
           <Grid item xs={12}>
             <TextField
@@ -147,8 +143,8 @@ axios.post('http://localhost:3000/')
           </Grid>
           <button className='border border-blue-400 transition-all active:scale-95 hover:scale-105 rounded-sm p-2 uppercase bg-blue-500 text-white' type='submit'>Register</button>
         </form>
-        <Link className='text-sm text-blue-500 inline-block mt-2' to="/login">login</Link>
-       
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>} {/* Display error message */}
+        <Link className='text-sm text-blue-500 inline-block mt-2' to="/login">Login</Link>
       </div>
     </div>
   );
