@@ -21,6 +21,8 @@ const Register = () => {
     const registrationDate = new Date().toISOString();
     const save = { ...data, status: "pending", registrationDate };
 
+
+
     try {
       if (data.role === "agent") {
         const res = await axios.post(`${import.meta.env.VITE_SITE_URL}/agent`, save);
