@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../../Provider/Provider';
 import VerifyAgent from '../../../private/VerifyAgent';
 import VerifyAdmin from '../../../private/VerifyAdmin';
@@ -9,50 +9,64 @@ import Admin from '../Admin';
 import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
-    const navigate = useNavigate();
     const { user, loading, logOut } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const [isLogin,setIsLogin] = useState(false)
 
+    // Function to get cookie value by name
+    const getCookie = (name) => {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(name))
+            ?.split('=')[1];
+        return cookieValue;
+    };
+
+    // Effect to log the 'token' cookie value on component mount
     useEffect(() => {
-        console.log("User in Home component: ", user);
-    }, [user]);
+        const isLogin = getCookie('status');
+        console.log(isLogin);
+        setIsLogin(isLogin)
+    }, []);
 
+    // Effect to handle authentication and navigation
     useEffect(() => {
         if (!loading && !user) {
-            // Logout and navigate if user is not authenticated
-            console.log("log log log ")
+            console.log("User not authenticated, logging out.");
             logOut();
             navigate("/login");
         }
     }, [loading, user, logOut, navigate]);
 
+    // Render based on user role
     if (loading) {
-        return <div>Loading... home</div>;
+        if (isLogin == "true") {
+            return <div>Loading... home</div>;
+        } else {
+            return <div>Home page</div>;
+        }
     }
 
     if (user?.role === "admin") {
-        console.log("enter admin");
         return (
             <VerifyAdmin>
                 <Admin />
             </VerifyAdmin>
         );
     } else if (user?.role === "agent") {
-        console.log("enter agent");
         return (
             <VerifyAgent>
                 <Agent />
             </VerifyAgent>
         );
     } else if (user?.role === "user") {
-        console.log("enter user");
         return (
             <VerifyUser>
                 <User />
             </VerifyUser>
         );
     } else {
-        // Return null or a fallback UI if needed
-        return null;
+        return null; // Fallback or handle unexpected cases
     }
 };
 
