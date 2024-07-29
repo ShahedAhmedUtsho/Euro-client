@@ -1,25 +1,42 @@
 import { Grid, TextField } from '@mui/material';
 import axios from 'axios';
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../Provider/Provider';
 
 const Login = () => {
+const {setUser,setLoading} = useContext(AuthContext)
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     defaultValues: {}
   });
-
+const navigate = useNavigate()
   const [loginError, setLoginError] = useState('');
 
-  const nameRef = useRef();
-  const emailRef = useRef();
+
+
   const pinRef = useRef();
 
   const handleLogin = async (data) => {
     try {
-      let res = await axios.post(`${import.meta.env.VITE_SITE_URL}/login`, data);
-      console.log(res);
+      let res = await axios.post(`${import.meta.env.VITE_SITE_URL}/login`, data,{withCredentials:true});
+      console.log(res.data.user);
+
+console.log(res.data)
+setUser(res.data.user) 
+setLoading(false)
+
+
+
+      navigate("/")
+
+
+
+
+
+
       // Handle successful login here
+      reset();
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setLoginError('Incorrect email or PIN.');
@@ -28,8 +45,8 @@ const Login = () => {
       }
     }
 
-    console.log("connected", data);
-    reset();
+  
+   
   };
 
   const handleKeyDown = (e, ref) => {
@@ -54,13 +71,14 @@ const Login = () => {
               autoComplete="Number or email"
               className='text-zinc-100'
               autoFocus
+              required
               error={Boolean(errors.key?.message)}
               helperText={errors.key?.message}
               {...register("key", {
                 required: "Give email or number",
               })}
-              inputRef={nameRef}
-              onKeyDown={(e) => handleKeyDown(e, emailRef)}
+             
+              onKeyDown={(e) => handleKeyDown(e, pinRef)}
             />
           </Grid>
           <Grid item xs={12}>
@@ -70,6 +88,7 @@ const Login = () => {
               id="pin"
               label="5 Digit PIN"
               name="pin"
+              required
               autoComplete="pin"
               className='text-zinc-100'
               error={Boolean(errors.pin?.message)}

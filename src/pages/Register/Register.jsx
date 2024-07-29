@@ -2,9 +2,10 @@ import { Grid, TextField, Radio, RadioGroup, FormControlLabel, FormControl, Form
 import axios from 'axios';
 import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
+  const navigate = useNavigate()
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     defaultValues: {}
   });
@@ -28,10 +29,16 @@ const Register = () => {
         const res = await axios.post(`${import.meta.env.VITE_SITE_URL}/agent`, save);
         console.log(res.data);
         setErrorMessage(''); 
+        reset() 
+        navigate('/login')
+        
       } else {
         const res = await axios.post(`${import.meta.env.VITE_SITE_URL}/user`, save);
         console.log(res.data);
         setErrorMessage(''); 
+        reset() 
+        navigate('/login')
+        
       }
     } catch (error) {
       if (error.response && error.response.status === 409) {
