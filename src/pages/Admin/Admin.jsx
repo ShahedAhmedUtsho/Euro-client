@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import { AuthContext } from '../../Provider/Provider';
 
 const Admin = () => {
-    const {user} = useContext(AuthContext)
+    const {user} = useContext(AuthContext) ; 
+    console.log('am admin')
     return (
-        <div>
+        <div className='text-black'>
             i am admin
             
         </div>

@@ -19,6 +19,8 @@ const navigate = useNavigate()
 
   const handleLogin = async (data) => {
     try {
+
+
       let res = await axios.post(`${import.meta.env.VITE_SITE_URL}/login`, data,{withCredentials:true});
       console.log(res.data.user);
 

@@ -24,9 +24,17 @@ const [loading,setLoading] = useState(true)
             setUser(res.data)
             setLoading(false)
         })
+        .catch((error)=> {
+            console.log(error) ; 
+            if(error.response.status === 401){
+                logOut()
+            }
+             
+            
+        })
         
     } catch (error) {
-        console.log(error.response) ; 
+        console.log(error) ; 
         
             setLoading(false);
         

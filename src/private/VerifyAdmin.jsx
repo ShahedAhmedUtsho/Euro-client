@@ -12,7 +12,7 @@ const VerifyAdmin = ({children} )=>{
     }
 
 
- if(user && user?.role === "user"){
+ if(user && user?.role === "admin"){
     return children
  }
 
